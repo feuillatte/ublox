@@ -31,14 +31,13 @@ constexpr float deg_c = 0.01f;
 // Extract U-Blox 24-bit signed integers from a 32-bit data blob
 // and cast into int32_t
 //
-static inline std::int32_t extract_int24(std::uint32_t bytes) {
-    std::uint8_t* b = reinterpret_cast<std::uint8_t*>(&bytes);
-    std::int32_t val = (std::int32_t)(
+static inline std::int32_t extract_int24(std::uint32_t data) {
+    const std::uint8_t* b = reinterpret_cast<std::uint8_t*>(&data);
+    return (std::int32_t)(
         (((std::uint32_t)b[2] << 24) & 0xFF000000) |
         (((std::uint32_t)b[1] << 16) & 0x00FF0000) |
         (((std::uint32_t)b[0] <<  8) & 0x0000FF00)
     ) / 256;
-    return val;
 }
 
 //
@@ -94,7 +93,7 @@ bool AdrUdrProduct::configureUblox(std::shared_ptr<ublox_gps::Gps> gps) {
 void AdrUdrProduct::subscribe(std::shared_ptr<ublox_gps::Gps> gps) {
   // Subscribe to NAV ATT messages
   if (getRosBoolean(node_, "publish.nav.att")) {
-    gps->subscribe<ublox_msgs::msg::NavATT>([this](const ublox_msgs::msg::NavATT &m) {nav_att_pub_->publish(m); },
+    gps->subscribe<ublox_msgs::msg::NavATT>([this](const ublox_msgs::msg::NavATT &m) { nav_att_pub_->publish(m); },
                                        1);
   }
 
