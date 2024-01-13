@@ -219,22 +219,36 @@ void UbloxNode::addFirmwareInterface() {
 
 void UbloxNode::addProductInterface(const std::string & product_category,
                                     const std::string & ref_rov) {
+  // High-Precision Ground reference station product
   if ((product_category == "HPG" || product_category == "HPS") && ref_rov == "REF") {
     components_.push_back(std::make_shared<HpgRefProduct>(nav_rate_, meas_rate_, updater_, rtcms_, this));
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for High-Precision Ground Reference Stations");
+  // High-Precision Ground rover product, relying on a reference station
   } else if ((product_category == "HPG" || product_category == "HPS") && ref_rov == "ROV") {
     components_.push_back(std::make_shared<HpgRovProduct>(nav_rate_, updater_, this));
-  } else if (product_category == "HPG" || product_category == "HPS") {
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for High-Precision Ground Rovers");
+  // Any other High-Precision Ground product
+  } else if (product_category == "HPG") {
     components_.push_back(std::make_shared<HpPosRecProduct>(nav_rate_, meas_rate_, frame_id_, updater_, rtcms_, this));
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for High-Precision Ground product not otherwise detected");
+  // Time Sync products
   } else if (product_category == "TIM") {
     components_.push_back(std::make_shared<TimProduct>(frame_id_, updater_, this));
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for Time Sync products");
+  // Automotive Dead Reckoning or Untethered Dead Reckoning products
   } else if (product_category == "ADR" ||
              product_category == "UDR") {
     components_.push_back(std::make_shared<AdrUdrProduct>(nav_rate_, meas_rate_, frame_id_, updater_, this));
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for Automotive/Untethered Dead Reckoning products");
+  // Frequency & Time Synchronization products
   } else if (product_category == "FTS") {
     components_.push_back(std::make_shared<FtsProduct>());
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for Frequency & Time Synchronization products");
+  // High-Precision Sensor Fusion products not matched above, with ADR/UDR support
   } else if (product_category == "HPS") {
     components_.push_back(std::make_shared<AdrUdrProduct>(nav_rate_, meas_rate_, frame_id_, updater_, this));
-    components_.push_back(std::make_shared<HpgRovProduct>(nav_rate_, updater_, this));
+    components_.push_back(std::make_shared<HpgRovProduct>(nav_rate_, updater_, this));  // In case of correction service use
+    RCLCPP_INFO(this->get_logger(), "Registered product interface for High-Precision Sensor Fusion products.");
   } else {
     RCLCPP_WARN(this->get_logger(), "Product category %s %s from MonVER message not recognized %s",
                 product_category.c_str(), ref_rov.c_str(),

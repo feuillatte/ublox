@@ -10,6 +10,7 @@ Example .yaml configuration files are included in `ublox_gps/config`. Consult th
 The `ublox_gps` node supports the following parameters for all products and firmware versions:
 * `device`: Path to the device port. Defaults to `/dev/ttyACM0`.
 * `raw_data`: Whether the device is a raw data product. Defaults to false. Firmware <= 7.03 only.
+* `config_on_startup`: Whether the node should configure the device (true) or use the device's configuration (false).
 * `load`: Parameters for loading the configuration to non-volatile memory. See `ublox_msgs/CfgCFG.msg`
     * `load/mask`: uint32_t. Mask of the configurations to load.
     * `load/device`: uint32_t. Mask which selects the devices for the load command.
@@ -188,6 +189,9 @@ To publish a given u-blox message to a ROS topic, set the parameter shown below 
 * `publish/esf/meas`: Topic `~esfmeas`
 * `publish/esf/raw`: Topic `~esfraw`
 * `publish/esf/status`: Topic `~esfstatus`
+
+* `~imu`([sensor_msgs/Imu](https://docs.ros2.org/latest/api/sensor_msgs/msg/Imu.html))
+* `~imu_raw`([sensor_msgs/Imu](https://docs.ros2.org/latest/api/sensor_msgs/msg/Imu.html))
 
 ### HNR messages
 * `publish/hnr/pvt`: Topic `~hnrpvt`. **ADR/UDR devices only**
